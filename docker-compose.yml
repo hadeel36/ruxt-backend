@@ -1,15 +1,6 @@
 version: '3'
-services:
-  postgresql:
-    image: postgres
-    ports:
-    - "127.0.0.1:5432:5432"
-  rabbitmq:
+services: 
+  elasticSearch:
     image: rabbitmq
     ports:
     - "127.0.0.1:5672:5672"
-    - "127.0.0.1:15672:15672"
-  redis:
-    image: redis
-    ports:
-    - "127.0.0.1:6379:6379"

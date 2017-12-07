@@ -1,8 +1,3 @@
- StoreBook REST API
+CRUX Backend + Wannabe Frontend
 
- - Application designed to be deployed with Heroku
-
- Process:
- 1. Run the docker-compose up
- 2. Connect the the Database, run the DB_setup script.
- 3. Run the application.
+More to come! Follow this space!
