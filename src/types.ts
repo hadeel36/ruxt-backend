@@ -1,6 +1,8 @@
 const TYPES = {
     ContentController: 'ContentController',
-    IOHalter: 'IOHalter'
+    IOHalter: 'IOHalter',
+    ElasticSearchClient: 'ElasticSearchClient',
+    ElasticSearchConnection: 'ElasticSearchConnection'
 };
 
 export { TYPES };

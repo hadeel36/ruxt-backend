@@ -2,8 +2,8 @@ import * as express from 'express';
 import * as expressLogger from 'express-logging';
 import * as logger from 'logops';
 import * as process from 'process';
+import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
-import { Pool } from 'pg';
 
 import * as interfaces from './interfaces';
 import { container } from './inversify.config';
@@ -17,6 +17,7 @@ app.set('port', NodePort);
 
 app.use(expressLogger(logger));
 app.use(cors({origin: true}));
+app.use(bodyParser.json())
 
 const initApplication = () => {
     app.listen(app.get('port'), () => {

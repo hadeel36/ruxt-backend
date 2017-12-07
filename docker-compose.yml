@@ -1,6 +1,10 @@
 version: '3'
 services: 
-  elasticSearch:
-    image: rabbitmq
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.0.1
     ports:
-    - "127.0.0.1:5672:5672"
+    - "127.0.0.1:9300:9300"
+    - "127.0.0.1:9200:9200"
+    environment:
+    - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    - ELASTIC_PASSWORD=password
