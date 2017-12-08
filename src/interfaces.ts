@@ -12,5 +12,5 @@ export interface IDocument {
 export interface IRequestFormat {
     device: string;
     origin: string;
-    connectionType: string;
+    connection: string;
 }

@@ -17,10 +17,11 @@ export class BigQueryClient {
         // return this.bigQueryConnection.bgClient.query({query});
 
         // Dummy
+        console.log('Doing BigQuery');
         return Promise.resolve([
             'some data',
             'some more data',
-            'whatever data'
+            (new Date()).getTime()
         ]);
     }
 }

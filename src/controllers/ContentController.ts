@@ -30,9 +30,24 @@ export class ContentController implements IController {
 
     handleContentRequest:express.RequestHandler = async (req, res) => {
         const requestObject:IRequestFormat = req.body;
+        // To prevent auto field type mapping of ElasticSearch
+        requestObject.connection = requestObject.connection.toLowerCase();
         
-        const existingDocument = await this.elasticSearchClient.search(requestObject);
-        console.log(existingDocument);
-        res.send('Hello world');
+        const results = await this.elasticSearchClient.search(requestObject);
+        
+        if (results.hits.hits.length === 0) {
+            const newData = await this.bigQueryCalculatorService.getData();
+            const newDocumentId = Object.keys(requestObject).reduce((acc, key) => acc + requestObject[key], '');
+            const newDocumentToStore = _.extend(requestObject, {content: newData});
+            try {
+                await this.elasticSearchClient.addDocument(newDocumentId, newDocumentToStore);
+            } catch(e) {
+                console.log('Failed to cache');
+            }
+            
+            res.send(newData);
+        } else {
+            res.send(results.hits.hits[0]._source.content);
+        }
     }
 }
