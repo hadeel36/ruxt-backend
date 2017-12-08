@@ -12,7 +12,7 @@ import { ElasticSearchConnection } from "./connections/ElasticSearchConnection";
 
 const container = new Container();
 
-// Used to stop all HTTP I/O till all promises are resolved...
+// Used to stop all HTTP I/O till all I/O blocking promises are resolved...
 container.bind<IOHalter>(TYPES.IOHalter).to(IOHalter).inSingletonScope();
 
 container.bind<ElasticSearchConnection>(TYPES.ElasticSearchConnection).toConstantValue(new ElasticSearchConnection(env.EsHost));
