@@ -9,7 +9,10 @@ import { ElasticSearchConnection } from '../connections/ElasticSearchConnection'
 
 @injectable()
 export class ElasticSearchClient {
-    public esConnection:ElasticSearchConnection;
+    private esConnection:ElasticSearchConnection;
+
+    private esIndex = 'contentIndex';
+    private esType = 'all';
 
     constructor(@inject(TYPES.ElasticSearchConnection) esConnection:ElasticSearchConnection, @inject(TYPES.IOHalter) ioHalter:IOHalter) {
         this.esConnection = esConnection;
@@ -18,18 +21,23 @@ export class ElasticSearchClient {
     }
 
     public addDocument(document:any):Promise<any> {
-        return Promise.resolve();
+        return promisify(this.esConnection.esClient.create)({
+            index: this.esIndex,
+            type: this.esType,
+            body: document
+        });
     }
 
-    public searchForDocument(searchParams:any):Promise<any> {
-        return Promise.resolve();
-    }
-
-    public getDocument(documentId:string):Promise<any> {
-        return Promise.resolve();
-    }
-
-    public getDocumentByParameter(requestObject:IRequestFormat):Promise<any> {
-        return Promise.resolve();
+    public search(searchParamObject:IRequestFormat):Promise<any> {
+        return promisify(this.esConnection.esClient.search)({
+            index: this.esIndex,
+            body: {
+                query: {
+                    match: {
+                        searchParamObject
+                    }
+                }
+            }
+        })
     }
 }

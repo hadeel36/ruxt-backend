@@ -19,6 +19,7 @@ const container = new Container();
 // Used to stop all HTTP I/O till all I/O blocking promises are resolved...
 container.bind<IOHalter>(TYPES.IOHalter).to(IOHalter).inSingletonScope();
 
+container.bind<any>(TYPES.Environment).toConstantValue(env);
 container.bind<ElasticSearchConnection>(TYPES.ElasticSearchConnection).toConstantValue(new ElasticSearchConnection(env.EsHost));
 container.bind<BigQueryConnection>(TYPES.BigQueryConnection).toConstantValue(new BigQueryConnection(env.BigQueryProjectId));
 container.bind<appInterfaces.IController>(TYPES.ContentController).to(ContentController).inSingletonScope();
@@ -26,5 +27,6 @@ container.bind<ElasticSearchClient>(TYPES.ElasticSearchClient).to(ElasticSearchC
 container.bind<BigQueryClient>(TYPES.BigQueryClient).to(BigQueryClient);
 container.bind<BigQueryTransformerService>(TYPES.BigQueryTransformerService).to(BigQueryTransformerService);
 container.bind<BigQueryCalculatorService>(TYPES.BigQueryCalculatorService).to(BigQueryCalculatorService);
+
 
 export { container };

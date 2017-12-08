@@ -7,8 +7,8 @@ import { IRequestFormat } from '../interfaces';
 
 @injectable()
 export class BigQueryCalculatorService {
-    private bigQueryClient;
-    private bigQueryTransformerService;
+    private bigQueryClient:BigQueryClient;
+    private bigQueryTransformerService:BigQueryTransformerService;
 
     constructor(@inject(TYPES.BigQueryClient) bigQueryClient:BigQueryClient, @inject(TYPES.BigQueryTransformerService) bigQueryTransformerService: BigQueryTransformerService) {
         this.bigQueryClient = bigQueryClient;
@@ -16,12 +16,7 @@ export class BigQueryCalculatorService {
     }
 
     getData() {
-        console.log('BAM');
         const query = this.bigQueryTransformerService.generateSql();
-        this.bigQueryClient.doQuery(query).then(data => {
-            console.log(data);
-        }).catch(e => {
-            console.log(e);
-        });
+        return this.bigQueryClient.doQuery(query);
     }
 }

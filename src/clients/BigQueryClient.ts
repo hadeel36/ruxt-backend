@@ -13,6 +13,14 @@ export class BigQueryClient {
     }
 
     doQuery(query:string):Promise<any> {
-        return this.bigQueryConnection.bgClient.query({query});
+        // Uncomment this line for actual querying
+        // return this.bigQueryConnection.bgClient.query({query});
+
+        // Dummy
+        return Promise.resolve([
+            'some data',
+            'some more data',
+            'whatever data'
+        ]);
     }
 }

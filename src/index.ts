@@ -17,7 +17,6 @@ app.set('port', NodePort);
 
 app.use(expressLogger(logger));
 app.use(cors({origin: true}));
-app.use(bodyParser.json())
 
 const initApplication = () => {
     app.listen(app.get('port'), () => {
@@ -25,9 +24,9 @@ const initApplication = () => {
     });
 };
 
-const usersController = container.get<interfaces.IController>(TYPES.ContentController);
+const mainController = container.get<interfaces.IController>(TYPES.ContentController);
 
-app.use(usersController.application);
+app.use(mainController.application);
 
 // Just a status endpoint
 app.get('/status', (request:express.Request, response:express.Response) => {
@@ -36,7 +35,9 @@ app.get('/status', (request:express.Request, response:express.Response) => {
 
 const ioHalter = container.get<IOHalter>(TYPES.IOHalter);
 
-Promise.all(ioHalter.getAllPromises()).then(initApplication);
+Promise.all(ioHalter.getAllPromises())
+    .then(initApplication)
+    .catch(e => console.log('Something went wrong while starting up the application', e));
 
 
 
