@@ -15,7 +15,7 @@ export class BigQueryCalculatorService {
         this.bigQueryTransformerService = bigQueryTransformerService;
     }
 
-    getData() {
+    getData():Promise<any> {
         const query = this.bigQueryTransformerService.generateSql();
         return this.bigQueryClient.doQuery(query);
     }

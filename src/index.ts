@@ -9,7 +9,7 @@ import * as interfaces from './interfaces';
 import { container } from './inversify.config';
 import { IOHalter } from './utils/IOHalter';
 import { TYPES } from './types';
-import { NodePort } from './env';
+import { NodePort, BaseUri } from './env';
 
 const app = express();
 
@@ -26,7 +26,11 @@ const initApplication = () => {
 
 const mainController = container.get<interfaces.IController>(TYPES.ContentController);
 
-app.use(mainController.application);
+if (BaseUri) {
+    app.use(BaseUri, mainController.application);
+} else {
+    app.use(mainController.application);
+}
 
 // Just a status endpoint
 app.get('/status', (request:express.Request, response:express.Response) => {
