@@ -18,7 +18,7 @@ export class ContentController implements IController {
 
     constructor(@inject(TYPES.BigQueryCalculatorService) bigQueryCalculatorService:BigQueryCalculatorService,
                 @inject(TYPES.ElasticSearchClient) elasticSearchClient:ElasticSearchClient,
-                @inject(TYPES.Environment) env:any
+                @inject(TYPES.Environment) env:any,
                 @inject(TYPES.Utils) utils:Utils) {
         this.bigQueryCalculatorService = bigQueryCalculatorService;
         this.elasticSearchClient = elasticSearchClient;
