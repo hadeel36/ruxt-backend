@@ -7,7 +7,8 @@ const TYPES = {
     BigQueryConnection: 'BigQueryConnection',
     BigQueryTransformerService: 'BigQueryTransformerService',
     BigQueryCalculatorService: 'BigQueryCalculatorService',
-    Environment: 'Environment'
+    Environment: 'Environment',
+    Utils: 'Utils'
 };
 
 export { TYPES };

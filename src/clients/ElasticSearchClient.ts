@@ -73,6 +73,17 @@ export class ElasticSearchClient {
             body: {origin}
         });
     }
+    
+    public getOriginCount():Promise<IElasticSearchResponse> {
+        return promisify(this.esConnection.esClient.search.bind(this.esConnection.esClient))({
+            index: this.esOriginIndex,
+            body: {
+                query: {
+                    match_all: {}
+                }
+            }
+        }).then((result:IElasticSearchResponse) => result.hits.total);
+    }
 
     public searchByOrigin(origin:string):Promise<IElasticSearchResponse> {
         const searchQueryObject = {

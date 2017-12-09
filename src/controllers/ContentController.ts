@@ -8,6 +8,7 @@ import { IController, IRequestFormat } from '../interfaces';
 import { IOHalter } from '../utils/IOHalter';
 import { BigQueryCalculatorService } from '../services/BigQueryCalculatorService';
 import { ElasticSearchClient } from '../clients/ElasticSearchClient';
+import { Utils } from '../utils/Utils';
 
 @injectable()
 export class ContentController implements IController {
@@ -17,7 +18,8 @@ export class ContentController implements IController {
 
     constructor(@inject(TYPES.BigQueryCalculatorService) bigQueryCalculatorService:BigQueryCalculatorService,
                 @inject(TYPES.ElasticSearchClient) elasticSearchClient:ElasticSearchClient,
-                @inject(TYPES.Environment) env:any) {
+                @inject(TYPES.Environment) env:any
+                @inject(TYPES.Utils) utils:Utils) {
         this.bigQueryCalculatorService = bigQueryCalculatorService;
         this.elasticSearchClient = elasticSearchClient;
 
@@ -46,27 +48,27 @@ export class ContentController implements IController {
         const results = await this.elasticSearchClient.getSpecificDocument(requestObject);
         
         if (results.hits.hits.length === 0) {
-            const newData = await this.bigQueryCalculatorService.getData();
+                const newData = await this.bigQueryCalculatorService.getData();
 
-            // TODO Check if valid data came, and act accordingly
-            const newDocumentId = Object.keys(requestObject).reduce((acc, key) => acc + requestObject[key], '');
-            const newDocumentToStore = _.extend(requestObject, {content: newData});
+                // TODO Check if valid data came, and act accordingly
+                const newDocumentId = Object.keys(requestObject).reduce((acc, key) => acc + requestObject[key], '');
+                const newDocumentToStore = _.extend(requestObject, {content: newData});
 
-            // Adding in content cache
-            try {
-                await this.elasticSearchClient.addDocument(newDocumentId, newDocumentToStore);
-            } catch(e) {
-                console.log('Failed to cache', e);
-            }
+                // Adding in content cache
+                try {
+                    await this.elasticSearchClient.addDocument(newDocumentId, newDocumentToStore);
+                } catch(e) {
+                    console.log('Failed to cache', e);
+                }
 
-            // Adding in origin cache
-            try {
-                await this.elasticSearchClient.addOrigin(requestObject.origin);
-            } catch(e) {
-                console.log('Maybe origin already cached', e);
-            }
-            
-            res.send(newData);
+                // Adding in origin cache
+                try {
+                    await this.elasticSearchClient.addOrigin(requestObject.origin);
+                } catch(e) {
+                    console.log('Maybe origin already cached', e);
+                }
+                
+                res.send(newData);
         } else {
             res.send(results.hits.hits[0]._source.content);
         }

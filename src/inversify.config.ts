@@ -12,6 +12,7 @@ import { ElasticSearchConnection } from "./connections/ElasticSearchConnection";
 import { BigQueryConnection } from "./connections/BigQueryConnection";
 import { BigQueryTransformerService } from "./services/BigQueryTransformerService";
 import { BigQueryCalculatorService } from "./services/BigQueryCalculatorService";
+import { Utils } from './utils/Utils';
 
 const container = new Container();
 
@@ -21,10 +22,11 @@ container.bind<IOHalter>(TYPES.IOHalter).to(IOHalter).inSingletonScope();
 container.bind<any>(TYPES.Environment).toConstantValue(env);
 container.bind<ElasticSearchConnection>(TYPES.ElasticSearchConnection).toConstantValue(new ElasticSearchConnection(env.EsHost));
 container.bind<BigQueryConnection>(TYPES.BigQueryConnection).toConstantValue(new BigQueryConnection(env.BigQueryProjectId));
-container.bind<ElasticSearchClient>(TYPES.ElasticSearchClient).to(ElasticSearchClient);
-container.bind<BigQueryClient>(TYPES.BigQueryClient).to(BigQueryClient);
-container.bind<BigQueryTransformerService>(TYPES.BigQueryTransformerService).to(BigQueryTransformerService);
-container.bind<BigQueryCalculatorService>(TYPES.BigQueryCalculatorService).to(BigQueryCalculatorService);
+container.bind<ElasticSearchClient>(TYPES.ElasticSearchClient).to(ElasticSearchClient).inSingletonScope();
+container.bind<BigQueryClient>(TYPES.BigQueryClient).to(BigQueryClient).inSingletonScope();
+container.bind<BigQueryTransformerService>(TYPES.BigQueryTransformerService).to(BigQueryTransformerService).inSingletonScope();
+container.bind<BigQueryCalculatorService>(TYPES.BigQueryCalculatorService).to(BigQueryCalculatorService).inSingletonScope();
 container.bind<appInterfaces.IController>(TYPES.ContentController).to(ContentController).inSingletonScope();
+container.bind<Utils>(TYPES.Utils).to(Utils);
 
 export { container };
