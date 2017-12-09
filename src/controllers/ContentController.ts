@@ -26,6 +26,19 @@ export class ContentController implements IController {
         this.application.use(bodyParser.json());
 
         this.application.post('/content', this.handleContentRequest);
+        this.application.post('/search', this.handleSearchRequest);
+    }
+
+    handleSearchRequest:express.RequestHandler = async (req, res) => {
+        const requestObject:IRequestFormat = req.body;
+        // To prevent auto field type mapping of ElasticSearch
+        if (requestObject.connection) {
+            requestObject.connection = requestObject.connection.toLowerCase();
+        }
+
+        const results = await this.elasticSearchClient.search(requestObject);
+
+        res.send(results.hits);
     }
 
     handleContentRequest:express.RequestHandler = async (req, res) => {
@@ -47,7 +60,7 @@ export class ContentController implements IController {
             
             res.send(newData);
         } else {
-            res.send(results.hits.hits[0]._source.content);
+            res.send(results.hits.hits[0]._source);
         }
     }
 }
