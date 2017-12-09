@@ -30,32 +30,40 @@ export class ContentController implements IController {
     }
 
     handleSearchRequest:express.RequestHandler = async (req, res) => {
-        const requestObject:IRequestFormat = req.body;
-        // ES specific tweakza
-        if (requestObject.connection) {
-            requestObject.connection = requestObject.connection.toLowerCase();
-        }
+        const origin = req.body.origin;
+        const results = await this.elasticSearchClient.searchByOrigin(origin);
 
-        const results = await this.elasticSearchClient.search(requestObject);
-
-        res.send(results.hits);
+        res.send(results.hits.hits.map(doc => doc._source));
     }
 
     handleContentRequest:express.RequestHandler = async (req, res) => {
-        const requestObject:IRequestFormat = req.body;
-        // To prevent auto field type mapping of ElasticSearch
-        requestObject.connection = requestObject.connection.toLowerCase();
+        let requestObject:IRequestFormat = {
+            connection: req.body.connection.toLowerCase(), // To prevent auto field type mapping of ElasticSearch
+            device: req.body.device,
+            origin: req.body.origin
+        };
         
-        const results = await this.elasticSearchClient.search(requestObject);
+        const results = await this.elasticSearchClient.getSpecificDocument(requestObject);
         
         if (results.hits.hits.length === 0) {
             const newData = await this.bigQueryCalculatorService.getData();
+
+            // TODO Check if valid data came, and act accordingly
             const newDocumentId = Object.keys(requestObject).reduce((acc, key) => acc + requestObject[key], '');
             const newDocumentToStore = _.extend(requestObject, {content: newData});
+
+            // Adding in content cache
             try {
                 await this.elasticSearchClient.addDocument(newDocumentId, newDocumentToStore);
             } catch(e) {
-                console.log('Failed to cache');
+                console.log('Failed to cache', e);
+            }
+
+            // Adding in origin cache
+            try {
+                await this.elasticSearchClient.addOrigin(requestObject.origin);
+            } catch(e) {
+                console.log('Maybe origin already cached', e);
             }
             
             res.send(newData);

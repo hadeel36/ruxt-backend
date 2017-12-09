@@ -26,7 +26,9 @@ export class ElasticSearchClient {
     private esConnection:ElasticSearchConnection;
 
     private esIndex = 'content-index';
+    private esOriginIndex = 'origin-index';
     private esType = 'all';
+    private esOriginType = 'all';
 
     constructor(@inject(TYPES.ElasticSearchConnection) esConnection:ElasticSearchConnection, @inject(TYPES.IOHalter) ioHalter:IOHalter) {
         this.esConnection = esConnection;
@@ -34,12 +36,21 @@ export class ElasticSearchClient {
         const ioPromise = promisify(this.esConnection.esClient.ping.bind(this.esConnection.esClient))({requestTimeout: 1000});
 
         ioHalter.addPromise(ioPromise);
-        ioHalter.addPromise(this.createIndex());
+        ioHalter.addPromise(this.createOriginIndex());
+        ioHalter.addPromise(this.createContentIndex());
     }
 
-    private createIndex():Promise<any> {
+    private createContentIndex():Promise<any> {
         return promisify(this.esConnection.esClient.indices.create.bind(this.esConnection.esClient))({
             index: this.esIndex
+        }).catch(_ => {
+            return true;
+        });
+    }
+
+    private createOriginIndex():Promise<any> {
+        return promisify(this.esConnection.esClient.indices.create.bind(this.esConnection.esClient))({
+            index: this.esOriginIndex
         }).catch(_ => {
             return true;
         });
@@ -54,7 +65,31 @@ export class ElasticSearchClient {
         });
     }
 
-    public search(searchParamObject:IRequestFormat):Promise<IElasticSearchResponse> {
+    public addOrigin(origin:string):Promise<any> {
+        return promisify(this.esConnection.esClient.create.bind(this.esConnection.esClient))({
+            index: this.esOriginIndex,
+            type: this.esOriginType,
+            id: origin,
+            body: {origin}
+        });
+    }
+
+    public searchByOrigin(origin:string):Promise<IElasticSearchResponse> {
+        const searchQueryObject = {
+            wildcard: {
+                origin: `*${origin}*`
+            }
+        };
+
+        return promisify(this.esConnection.esClient.search.bind(this.esConnection.esClient))({
+            index: this.esOriginIndex,
+            body: {
+                query: searchQueryObject
+            }
+        });
+    }
+
+    public getSpecificDocument(searchParamObject:IRequestFormat):Promise<IElasticSearchResponse> {
         const searchTermQueryObject = Object.keys(searchParamObject).map(key => {
             return {
                 term: {
@@ -72,6 +107,6 @@ export class ElasticSearchClient {
                     }
                 }
             }
-        })
+        });
     }
 }
