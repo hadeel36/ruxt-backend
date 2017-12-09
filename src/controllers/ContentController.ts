@@ -60,7 +60,7 @@ export class ContentController implements IController {
             
             res.send(newData);
         } else {
-            res.send(results.hits.hits[0]._source);
+            res.send(results.hits.hits[0]._source.content);
         }
     }
 }
