@@ -31,7 +31,7 @@ export class ContentController implements IController {
 
     handleSearchRequest:express.RequestHandler = async (req, res) => {
         const requestObject:IRequestFormat = req.body;
-        // To prevent auto field type mapping of ElasticSearch
+        // ES specific tweakza
         if (requestObject.connection) {
             requestObject.connection = requestObject.connection.toLowerCase();
         }
