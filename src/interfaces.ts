@@ -14,3 +14,7 @@ export interface IRequestFormat {
     origin: string;
     connection: string;
 }
+
+export interface IStorageObject extends IRequestFormat {
+    content: any;
+}

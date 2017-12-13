@@ -2,7 +2,7 @@ import * as express from 'express';
 import { TYPES } from '../types';
 import { inject, injectable } from 'inversify';
 
-import { IController, IRequestFormat } from '../interfaces';
+import { IController, IRequestFormat, IStorageObject } from '../interfaces';
 import { IOHalter } from '../utils/IOHalter';
 import { promisify } from 'util';
 import { ElasticSearchConnection } from '../connections/ElasticSearchConnection';
@@ -56,7 +56,7 @@ export class ElasticSearchClient {
         });
     }
 
-    public addDocument(id:string, document:any):Promise<any> {
+    public addDocument(id:string, document:IStorageObject):Promise<any> {
         return promisify(this.esConnection.esClient.create.bind(this.esConnection.esClient))({
             index: this.esIndex,
             type: this.esType,
