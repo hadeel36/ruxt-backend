@@ -39,42 +39,49 @@ export class ContentController implements IController {
     }
 
     handleContentRequest:express.RequestHandler = async (req, res) => {
-        let requestObject:IRequestFormat = {
-            connection: req.body.connection.toLowerCase(), // To prevent auto field type mapping of ElasticSearch
-            device: req.body.device,
-            origin: req.body.origin
-        };
+        const requiredProperties = ['connection', 'device', 'origin'];
         
-        const results = await this.elasticSearchClient.getSpecificDocument(requestObject);
-        
-        if (results.hits.hits.length === 0) {
-            try {
-                const newData = await this.bigQueryCalculatorService.getData(requestObject);
-
-                // TODO Check if valid data came, and act accordingly
-                const newDocumentId = Object.keys(requestObject).reduce((acc, key) => acc + requestObject[key], '');
-                const newDocumentToStore = _.extend(requestObject, {content: JSON.stringify(newData)});
-
-                // Adding in content cache
+        // Check to see if there are no bad request...
+        if (requiredProperties.reduce((acc, key) => acc + (req.body.hasOwnProperty(key) ? 1 : 0), 0) === requiredProperties.length) {
+            const requestObject:IRequestFormat = {
+                connection: req.body.connection.toLowerCase(), // To prevent auto field type mapping of ElasticSearch
+                device: req.body.device,
+                origin: req.body.origin
+            };
+            
+            const results = await this.elasticSearchClient.getSpecificDocument(requestObject);
+            
+            if (results.hits.hits.length === 0) {
                 try {
-                    await this.elasticSearchClient.addDocument(newDocumentId, newDocumentToStore);
-                } catch(e) {
-                    console.log('Failed to cache', e);
-                }
+                    const newData = await this.bigQueryCalculatorService.getData(requestObject);
 
-                // Adding in origin cache
-                try {
-                    await this.elasticSearchClient.addOrigin(requestObject.origin);
-                } catch(e) {
-                    console.log('Maybe origin already cached', e);
+                    // TODO Check if valid data came, and act accordingly
+                    const newDocumentId = Object.keys(requestObject).reduce((acc, key) => acc + requestObject[key], '');
+                    const newDocumentToStore = _.extend(requestObject, {content: JSON.stringify(newData)});
+
+                    // Adding in content cache
+                    try {
+                        await this.elasticSearchClient.addDocument(newDocumentId, newDocumentToStore);
+                    } catch(e) {
+                        console.log('Failed to cache', e);
+                    }
+
+                    // Adding in origin cache
+                    try {
+                        await this.elasticSearchClient.addOrigin(requestObject.origin);
+                    } catch(e) {
+                        console.log('Maybe origin already cached', e);
+                    }
+                    
+                    res.send(newData);
+                } catch {
+                    res.status(400).send();
                 }
-                
-                res.send(newData);
-            } catch {
-                res.status(400).send();
+            } else {
+                res.send(JSON.parse(results.hits.hits[0]._source.content));
             }
         } else {
-            res.send(JSON.parse(results.hits.hits[0]._source.content));
+            res.send(400).send('BAD REQUEST');
         }
     }
 }

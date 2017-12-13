@@ -9,7 +9,8 @@ export class ElasticSearchConnection {
 
     constructor(esHost:string) {
         this.esClient = new elasticsearch.Client({
-            host: esHost
+            host: esHost,
+            log: 'trace'
         });
     }
 }

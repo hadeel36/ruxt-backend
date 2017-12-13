@@ -36,13 +36,25 @@ export class ElasticSearchClient {
         const ioPromise = promisify(this.esConnection.esClient.ping.bind(this.esConnection.esClient))({requestTimeout: 1000});
 
         ioHalter.addPromise(ioPromise);
-        ioHalter.addPromise(this.createOriginIndex());
         ioHalter.addPromise(this.createContentIndex());
+        ioHalter.addPromise(this.createOriginIndex());
     }
 
     private createContentIndex():Promise<any> {
         return promisify(this.esConnection.esClient.indices.create.bind(this.esConnection.esClient))({
-            index: this.esIndex
+            index: this.esIndex,
+            body: {
+                mappings: {
+                    all: {
+                        properties: {
+                            content: {
+                                type: 'text',
+                                index: false // Don't index the actual content that's calculated
+                            }
+                        }
+                    }
+                }
+            }
         }).catch(_ => {
             return true;
         });
@@ -74,7 +86,7 @@ export class ElasticSearchClient {
         });
     }
     
-    public getOriginCount():Promise<string[]> {
+    public getOriginCount():Promise<number> {
         return promisify(this.esConnection.esClient.search.bind(this.esConnection.esClient))({
             index: this.esOriginIndex,
             body: {
@@ -82,7 +94,8 @@ export class ElasticSearchClient {
                     match_all: {}
                 }
             }
-        });
+        })
+        .then((data => data.hits.total);
     }
 
     public searchByOrigin(origin:string):Promise<string[]> {
