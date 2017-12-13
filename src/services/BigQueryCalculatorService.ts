@@ -16,10 +16,11 @@ export class BigQueryCalculatorService {
         this.bigQueryTransformerService = bigQueryTransformerService;
     }
 
-    getData(requestObject:IRequestFormat):Promise<any> {
+    async getData(requestObject:IRequestFormat):Promise<any> {
         const query = this.bigQueryTransformerService.generateSql(requestObject);
         console.log('Querying...');
         console.log(query);
-        return this.bigQueryClient.doQuery(query);
+        const data = await this.bigQueryClient.doQuery(query);
+        return {bam: data[0].f0_};
     }
 }

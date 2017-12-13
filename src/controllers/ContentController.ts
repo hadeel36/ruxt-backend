@@ -53,7 +53,7 @@ export class ContentController implements IController {
 
                 // TODO Check if valid data came, and act accordingly
                 const newDocumentId = Object.keys(requestObject).reduce((acc, key) => acc + requestObject[key], '');
-                const newDocumentToStore = _.extend(requestObject, {content: newData});
+                const newDocumentToStore = _.extend(requestObject, {content: JSON.stringify(newData)});
 
                 // Adding in content cache
                 try {
@@ -74,7 +74,7 @@ export class ContentController implements IController {
                 res.status(400).send();
             }
         } else {
-            res.send(results.hits.hits[0]._source.content);
+            res.send(JSON.parse(results.hits.hits[0]._source.content));
         }
     }
 }
