@@ -35,7 +35,7 @@ export class ContentController implements IController {
         const origin = req.body.origin;
         const results = await this.elasticSearchClient.searchByOrigin(origin);
 
-        res.send(results.hits.hits.map(doc => doc._source));
+        res.send(results);
     }
 
     handleContentRequest:express.RequestHandler = async (req, res) => {
@@ -48,6 +48,7 @@ export class ContentController implements IController {
         const results = await this.elasticSearchClient.getSpecificDocument(requestObject);
         
         if (results.hits.hits.length === 0) {
+            try {
                 const newData = await this.bigQueryCalculatorService.getData(requestObject);
 
                 // TODO Check if valid data came, and act accordingly
@@ -69,6 +70,9 @@ export class ContentController implements IController {
                 }
                 
                 res.send(newData);
+            } catch {
+                res.status(400).send();
+            }
         } else {
             res.send(results.hits.hits[0]._source.content);
         }

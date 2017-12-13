@@ -74,7 +74,7 @@ export class ElasticSearchClient {
         });
     }
     
-    public getOriginCount():Promise<IElasticSearchResponse> {
+    public getOriginCount():Promise<string[]> {
         return promisify(this.esConnection.esClient.search.bind(this.esConnection.esClient))({
             index: this.esOriginIndex,
             body: {
@@ -82,10 +82,10 @@ export class ElasticSearchClient {
                     match_all: {}
                 }
             }
-        }).then((result:IElasticSearchResponse) => result.hits.total);
+        });
     }
 
-    public searchByOrigin(origin:string):Promise<IElasticSearchResponse> {
+    public searchByOrigin(origin:string):Promise<string[]> {
         const searchQueryObject = {
             wildcard: {
                 origin: `*${origin}*`
@@ -97,7 +97,8 @@ export class ElasticSearchClient {
             body: {
                 query: searchQueryObject
             }
-        });
+        })
+        .then((data => data.hits.hits.map(doc => doc._source)));
     }
 
     public getSpecificDocument(searchParamObject:IRequestFormat):Promise<IElasticSearchResponse> {
