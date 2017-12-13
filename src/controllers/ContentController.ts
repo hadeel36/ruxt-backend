@@ -48,7 +48,7 @@ export class ContentController implements IController {
         const results = await this.elasticSearchClient.getSpecificDocument(requestObject);
         
         if (results.hits.hits.length === 0) {
-                const newData = await this.bigQueryCalculatorService.getData();
+                const newData = await this.bigQueryCalculatorService.getData(requestObject);
 
                 // TODO Check if valid data came, and act accordingly
                 const newDocumentId = Object.keys(requestObject).reduce((acc, key) => acc + requestObject[key], '');

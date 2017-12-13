@@ -8,8 +8,6 @@ export class BigQueryConnection {
     public bgClient;
 
     constructor(private bigQueryProjectId:string) {
-        this.bgClient = new BigQuery({
-            projectId: bigQueryProjectId
-        });
+        this.bgClient = new BigQuery();
     }
 }

@@ -4,13 +4,5 @@ import { ElasticSearchClient } from '../clients/ElasticSearchClient';
 
 @injectable()
 export class Utils {
-    esClient: ElasticSearchClient;
-
-    constructor(@inject(TYPES.ElasticSearchClient) esClient:ElasticSearchClient) {
-        this.esClient = esClient;
-    }
-
-    public foo(){
-        return '';
-    }  
+    constructor() {}
 }

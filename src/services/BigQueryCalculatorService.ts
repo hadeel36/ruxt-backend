@@ -10,13 +10,16 @@ export class BigQueryCalculatorService {
     private bigQueryClient:BigQueryClient;
     private bigQueryTransformerService:BigQueryTransformerService;
 
-    constructor(@inject(TYPES.BigQueryClient) bigQueryClient:BigQueryClient, @inject(TYPES.BigQueryTransformerService) bigQueryTransformerService: BigQueryTransformerService) {
+    constructor(@inject(TYPES.BigQueryClient) bigQueryClient:BigQueryClient, 
+        @inject(TYPES.BigQueryTransformerService) bigQueryTransformerService: BigQueryTransformerService) {
         this.bigQueryClient = bigQueryClient;
         this.bigQueryTransformerService = bigQueryTransformerService;
     }
 
-    getData():Promise<any> {
-        const query = this.bigQueryTransformerService.generateSql();
+    getData(requestObject:IRequestFormat):Promise<any> {
+        const query = this.bigQueryTransformerService.generateSql(requestObject);
+        console.log('Querying...');
+        console.log(query);
         return this.bigQueryClient.doQuery(query);
     }
 }

@@ -1,8 +1,10 @@
 import { TYPES } from '../types';
 import { inject, injectable } from 'inversify';
+import { promisify } from 'util';
 import { BigQueryConnection } from '../connections/BigQueryConnection';
 import { BigQueryTransformerService } from '../services/BigQueryTransformerService';
 import { IRequestFormat } from '../interfaces';
+import { IOHalter } from '../utils/IOHalter';
 
 @injectable()
 export class BigQueryClient {
@@ -14,14 +16,6 @@ export class BigQueryClient {
 
     doQuery(query:string):Promise<any> {
         // Uncomment this line for actual querying
-        // return this.bigQueryConnection.bgClient.query({query});
-
-        // Dummy
-        console.log('Doing BigQuery');
-        return Promise.resolve([
-            'some data',
-            'some more data',
-            (new Date()).getTime()
-        ]);
+        return promisify(this.bigQueryConnection.bgClient.query.bind(this.bigQueryConnection.bgClient))({query});
     }
 }
