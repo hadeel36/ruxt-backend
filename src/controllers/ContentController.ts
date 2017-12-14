@@ -44,7 +44,7 @@ export class ContentController implements IController {
         // Check to see if there are no bad request...
         if (requiredProperties.reduce((acc, key) => acc + (req.body.hasOwnProperty(key) ? 1 : 0), 0) === requiredProperties.length) {
             const requestObject:IRequestFormat = {
-                connection: req.body.connection.toLowerCase(), // To prevent auto field type mapping of ElasticSearch
+                connection: req.body.connection,
                 device: req.body.device,
                 origin: req.body.origin
             };
