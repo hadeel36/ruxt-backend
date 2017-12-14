@@ -4,7 +4,7 @@ import { IRequestFormat } from '../interfaces';
 
 @injectable()
 export class BigQueryTransformerService {
-    public datasetName = 'chrome-ux-report.chrome_ux_report.201710';
+    public datasetName = 'chrome-ux-report.all.201711';
 
     public generateSql(requestObject:IRequestFormat, dimension, time = null) {
 		let histogramName;
