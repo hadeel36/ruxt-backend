@@ -95,7 +95,7 @@ export class ElasticSearchClient {
                 }
             }
         })
-        .then((data => data.hits.total);
+        .then((data => data.hits.total));
     }
 
     public searchByOrigin(origin:string):Promise<string[]> {

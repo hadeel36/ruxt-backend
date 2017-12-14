@@ -74,14 +74,18 @@ export class ContentController implements IController {
                     }
                     
                     res.send(newData);
-                } catch {
-                    res.status(400).send();
+                } catch (err) {
+                    res.status(400).send({
+                        message: err.message
+                    });
                 }
             } else {
                 res.send(JSON.parse(results.hits.hits[0]._source.content));
             }
         } else {
-            res.send(400).send('BAD REQUEST');
+            res.status(400).send({
+                message: "Required parameter missing"
+            });
         }
     }
 }
