@@ -100,8 +100,9 @@ export class ElasticSearchClient {
 
     public searchByOrigin(origin:string):Promise<string[]> {
         const searchQueryObject = {
-            wildcard: {
-                origin: `*${origin}*`
+            query_string: {
+                fields: ["origin"],
+                query: `(http://*${origin}*) OR (https://*${origin}*)`,
             }
         };
 
