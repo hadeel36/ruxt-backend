@@ -9,14 +9,18 @@ import * as interfaces from './interfaces';
 import { container } from './inversify.config';
 import { IOHalter } from './utils/IOHalter';
 import { TYPES } from './types';
-import { NodePort, BaseUri } from './env';
+import { NodePort, BaseUri, environment, frontendDomain } from './env';
 
 const app = express();
 
 app.set('port', NodePort);
 
 app.use(expressLogger(logger));
-app.use(cors({origin: true}));
+if (environment === "production") {
+    app.use(cors({ origin: frontendDomain }));
+} else {
+    app.use(cors({origin: true}));
+}
 
 const initApplication = () => {
     app.listen(app.get('port'), () => {
