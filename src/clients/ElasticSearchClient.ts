@@ -112,7 +112,8 @@ export class ElasticSearchClient {
                 query: searchQueryObject
             }
         })
-        .then((data => data.hits.hits.map(doc => doc._source)));
+        .then((data => data.hits.hits.map(doc => doc._source)))
+        .then((arr => arr.sort((a, b) => a.origin.length - b.origin.length)))
     }
 
     public getSpecificDocument(searchParamObject:IRequestFormat):Promise<IElasticSearchResponse> {
