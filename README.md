@@ -2,7 +2,7 @@ RUXT Dashboard Backend
 
 # API
 ## POST /search  
-{ "origin": "google" }
+{ "origin": "google" }  
 Retuns all origins matching the query present in the current dataset. 
 
 ### Result
@@ -30,6 +30,7 @@ Retuns all origins matching the query present in the current dataset.
     "device": "phone"
 }
 
+Returns the FCP and onload probabilites finishing before 1sec, 2sec ... 10 sec
 ### Result
 ```
 {
