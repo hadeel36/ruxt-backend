@@ -3,6 +3,8 @@ const TYPES = {
     IOHalter: 'IOHalter',
     ElasticSearchClient: 'ElasticSearchClient',
     ElasticSearchConnection: 'ElasticSearchConnection',
+    RedisClient: 'RedisClient',
+    RedisConnection: 'RedisConnection',
     BigQueryClient: 'BigQueryClient',
     BigQueryConnection: 'BigQueryConnection',
     BigQueryTransformerService: 'BigQueryTransformerService',

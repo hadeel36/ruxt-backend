@@ -8,6 +8,7 @@ import { IController, IRequestFormat } from '../interfaces';
 import { IOHalter } from '../utils/IOHalter';
 import { BigQueryCalculatorService } from '../services/BigQueryCalculatorService';
 import { ElasticSearchClient } from '../clients/ElasticSearchClient';
+import { RedisClient } from '../clients/RedisClient';
 import { Utils } from '../utils/Utils';
 
 @injectable()
@@ -15,13 +16,15 @@ export class ContentController implements IController {
     application: express.Application;
     bigQueryCalculatorService: BigQueryCalculatorService;
     elasticSearchClient: ElasticSearchClient;
+    redisClient: RedisClient;
 
     constructor(@inject(TYPES.BigQueryCalculatorService) bigQueryCalculatorService:BigQueryCalculatorService,
                 @inject(TYPES.ElasticSearchClient) elasticSearchClient:ElasticSearchClient,
                 @inject(TYPES.Environment) env:any,
-                @inject(TYPES.Utils) utils:Utils) {
+                @inject(TYPES.Utils) utils:Utils, @inject(TYPES.RedisClient) redisClient:RedisClient) {
         this.bigQueryCalculatorService = bigQueryCalculatorService;
         this.elasticSearchClient = elasticSearchClient;
+        this.redisClient = redisClient;
 
         this.application = express();
 
@@ -49,19 +52,17 @@ export class ContentController implements IController {
                 origin: req.body.origin
             };
             
-            const results = await this.elasticSearchClient.getSpecificDocument(requestObject);
+            const documentID = Object.keys(requestObject).reduce((acc, key) => acc + requestObject[key], '');
+            const results = await this.redisClient.getSpecificDocument(documentID);
             
-            if (results.hits.hits.length === 0) {
+            if (!results) {
                 try {
                     const newData = await this.bigQueryCalculatorService.getData(requestObject);
 
                     // TODO Check if valid data came, and act accordingly
-                    const newDocumentId = Object.keys(requestObject).reduce((acc, key) => acc + requestObject[key], '');
-                    const newDocumentToStore = _.extend(requestObject, {content: JSON.stringify(newData)});
-
                     // Adding in content cache
                     try {
-                        await this.elasticSearchClient.addDocument(newDocumentId, newDocumentToStore);
+                        await this.redisClient.addDocument(documentID, newData);
                     } catch(e) {
                         console.log('Failed to cache', e);
                     }
@@ -80,7 +81,7 @@ export class ContentController implements IController {
                     });
                 }
             } else {
-                res.send(JSON.parse(results.hits.hits[0]._source.content));
+                res.send(JSON.parse(results));
             }
         } else {
             res.status(400).send({
