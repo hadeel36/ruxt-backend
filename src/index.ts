@@ -22,6 +22,8 @@ if (environment === "production") {
     app.use(cors({origin: true}));
 }
 
+app.options('*', cors());
+
 const initApplication = () => {
     app.listen(app.get('port'), () => {
         console.log(`Application is listening on PORT ${app.get('port')}`)
