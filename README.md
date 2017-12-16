@@ -30,7 +30,7 @@ Retuns all origins matching the query present in the current dataset.
     "device": "phone"
 }
 
-Returns the FCP and onload probabilites finishing before 1sec, 2sec ... 10 sec
+Returns the probability of First Contentful Paint and onload finishing before 1sec, 2sec ... 10 sec
 ### Result
 ```
 {
