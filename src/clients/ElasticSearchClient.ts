@@ -68,15 +68,6 @@ export class ElasticSearchClient {
         });
     }
 
-    public addDocument(id:string, document:IStorageObject):Promise<any> {
-        return promisify(this.esConnection.esClient.create.bind(this.esConnection.esClient))({
-            index: this.esIndex,
-            type: this.esType,
-            id,
-            body: document
-        });
-    }
-
     public addOrigin(origin:string):Promise<any> {
         return promisify(this.esConnection.esClient.create.bind(this.esConnection.esClient))({
             index: this.esOriginIndex,
@@ -104,24 +95,4 @@ export class ElasticSearchClient {
         .then((arr => arr.sort((a, b) => a.origin.length - b.origin.length)))
     }
 
-    public getSpecificDocument(searchParamObject:IRequestFormat):Promise<IElasticSearchResponse> {
-        const searchTermQueryObject = Object.keys(searchParamObject).map(key => {
-            return {
-                term: {
-                    [key]: searchParamObject[key]
-                }
-            };
-        });
-
-        return promisify(this.esConnection.esClient.search.bind(this.esConnection.esClient))({
-            index: this.esIndex,
-            body: {
-                query: {
-                    bool: {
-                        must: searchTermQueryObject
-                    }
-                }
-            }
-        });
-    }
 }
