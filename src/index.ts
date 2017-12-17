@@ -4,6 +4,7 @@ import * as logger from 'logops';
 import * as process from 'process';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
+import * as cacheControl from 'express-cache-controller';
 
 import * as interfaces from './interfaces';
 import { container } from './inversify.config';
@@ -16,6 +17,10 @@ const app = express();
 app.set('port', NodePort);
 
 app.use(expressLogger(logger));
+app.use(cacheControl({
+    maxAge: 14400,
+}));
+
 if (environment === "production") {
     app.use(cors({ origin: frontendDomain }));
 } else {
