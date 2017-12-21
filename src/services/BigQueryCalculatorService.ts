@@ -17,41 +17,34 @@ export class BigQueryCalculatorService {
         this.bigQueryTransformerService = bigQueryTransformerService;
     }
 
-    private async getResults(dimension, requestObject:IRequestFormat) {
+    private async getResults(requestObject:IRequestFormat) {
         const QueryStatements = [];
-        const query = this.bigQueryTransformerService.generateSql(requestObject, dimension);
-        QueryStatements.push(query);
-        for (let i = 1; i <= 10; i++) {
-            QueryStatements.push(this.bigQueryTransformerService.generateSql(requestObject, dimension, i));
-        }
-
-        const QueryPromises = QueryStatements.map((sql) => this.bigQueryClient.doQuery(sql));
-
+        const query = this.bigQueryTransformerService.generateSql(requestObject);
         console.log('Querying...');
-        const data = (await Promise.all(QueryPromises)).map((result) => result[0].f0_);
-        
-        const totalDensity = data[0];
-        const probabilities = {};
-        for (let i = 1; i <=10; i++) {
-            const probability = data[i]/totalDensity;
-            probabilities[i] = probability;
+        const data = (await this.bigQueryClient.doQuery(query))[0];
+        console.log(data);
+        if (!data) {
+            return [null, null];
         }
-
-        console.log(probabilities);
-        return probabilities;
+        const fcpProbabilities = {};
+        const onloadProbabilites = {};
+        for (let i = 1; i <=10; i++) {
+            fcpProbabilities[i] = data[`t${i}fcp`];
+        }
+        for (let i = 1; i <=10; i++) {
+            onloadProbabilites[i] = data[`t${i}onload`];
+        }
+        return [fcpProbabilities, onloadProbabilites];
     }
 
     async getData(requestObject:IRequestFormat):Promise<any> {
 
-        const [FCPProbabilites, onLoadProbabilies] = await Promise.all([
-            this.getResults("fcp", requestObject),
-            this.getResults("onload", requestObject),
-        ]);
+        const [fcpProbabilities, onloadProbabilites] = await this.getResults(requestObject);
 
         return {
             bam: {
-                fcp: FCPProbabilites,
-                onload: onLoadProbabilies,
+                fcp: fcpProbabilities,
+                onload: onloadProbabilites,
            },
         };
     }
