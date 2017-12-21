@@ -78,13 +78,6 @@ export class ContentController implements IController {
                     } catch(e) {
                         console.log('Failed to cache', e);
                     }
-
-                    // Adding in origin cache
-                    try {
-                        await this.elasticSearchClient.addOrigin(requestObject.origin);
-                    } catch(e) {
-                        console.log('Maybe origin already cached', e);
-                    }
                     
                     res.send(newData);
                 } catch (err) {
