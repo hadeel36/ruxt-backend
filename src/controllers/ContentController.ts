@@ -35,7 +35,19 @@ export class ContentController implements IController {
     }
 
     handleSearchRequest:express.RequestHandler = async (req, res) => {
-        const origin = req.body.origin;
+        let origin = req.body.origin;
+        if (origin.startsWith("https://")) {
+           origin = origin.substr("https://".length)
+        } else if (origin.startsWith("http://")) {
+            origin = origin.substr("http://".length)
+        } else if (origin.startsWith("http:")) {
+            origin = origin.substr("http:".length)
+        } else if (origin.startsWith("https:")) {
+            origin = origin.substr("https:".length)
+        }
+        origin = origin.replace(/\//g, '');
+        origin = origin.replace(/:/g, '');
+
         const results = await this.elasticSearchClient.searchByOrigin(origin);
 
         res.send(results);
