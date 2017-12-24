@@ -79,12 +79,10 @@ npm install # in another terminal
 npm run watch
 ```
 
-To build
-```bash
-npm run build
-```
-
 To start in production mode (set env variables properly)
 ```bash
-npm start
+export NODE_ENV=production
+export GOOGLE_APPLICATION_CREDENTIALS=~/crux-dashboard-backend/crux-gcloud.json
+npm run build
+npm start # pm2 reloadall
 ```

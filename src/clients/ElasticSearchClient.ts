@@ -77,7 +77,39 @@ export class ElasticSearchClient {
         });
     }
 
+    public searchExactOrigin(origin:string):Promise<boolean> {
+
+        const searchQueryObject = {
+            query_string: {
+                fields: ["origin"],
+                query: `${origin}`,
+            }
+        };
+
+        return promisify(this.esConnection.esClient.search.bind(this.esConnection.esClient))({
+            index: this.esOriginIndex,
+            body: {
+                query: searchQueryObject
+            }
+        })
+        .then((data => data.hits.hits.map(doc => doc._source)))
+        .then((arr => arr.length > 0));
+    }
+
     public searchByOrigin(origin:string):Promise<string[]> {
+
+        if (origin.startsWith("https://")) {
+            origin = origin.substr("https://".length)
+         } else if (origin.startsWith("http://")) {
+             origin = origin.substr("http://".length)
+         } else if (origin.startsWith("http:")) {
+             origin = origin.substr("http:".length)
+         } else if (origin.startsWith("https:")) {
+             origin = origin.substr("https:".length)
+         }
+         origin = origin.replace(/\//g, '');
+         origin = origin.replace(/:/g, '');
+
         const searchQueryObject = {
             query_string: {
                 fields: ["origin"],

@@ -36,17 +36,6 @@ export class ContentController implements IController {
 
     handleSearchRequest:express.RequestHandler = async (req, res) => {
         let origin = req.body.origin;
-        if (origin.startsWith("https://")) {
-           origin = origin.substr("https://".length)
-        } else if (origin.startsWith("http://")) {
-            origin = origin.substr("http://".length)
-        } else if (origin.startsWith("http:")) {
-            origin = origin.substr("http:".length)
-        } else if (origin.startsWith("https:")) {
-            origin = origin.substr("https:".length)
-        }
-        origin = origin.replace(/\//g, '');
-        origin = origin.replace(/:/g, '');
 
         const results = await this.elasticSearchClient.searchByOrigin(origin);
 
@@ -66,8 +55,14 @@ export class ContentController implements IController {
             
             const documentID = Object.keys(requestObject).reduce((acc, key) => acc + requestObject[key], '');
             const results = await this.redisClient.getSpecificDocument(documentID);
-            
-            if (!results) {
+
+            const doesOriginExist = (await this.elasticSearchClient.searchExactOrigin(req.body.origin));
+            if (!doesOriginExist) {
+                console.log(`origin does not exist ${req.body.origin}`);
+                res.status(400).send({
+                    message: "origin does not exist",
+                });
+            } else if (!results) {
                 try {
                     const newData = await this.bigQueryCalculatorService.getData(requestObject);
 
