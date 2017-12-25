@@ -607,6 +607,10 @@ ee-first@1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/ee-first/-/ee-first-1.1.1.tgz#590c61156b0ae2f4f0255732a158b266bc56b21d"
 
+elasticsearch-sanitize@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/elasticsearch-sanitize/-/elasticsearch-sanitize-2.0.0.tgz#02a7dfb9dac5220686c71fd28f14d18c7a09a5e1"
+
 elasticsearch@^14.0.0:
   version "14.0.0"
   resolved "https://registry.yarnpkg.com/elasticsearch/-/elasticsearch-14.0.0.tgz#560317ca87121a73c0895818ae291f5553857bda"

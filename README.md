@@ -84,5 +84,5 @@ To start in production mode (set env variables properly)
 export NODE_ENV=production
 export GOOGLE_APPLICATION_CREDENTIALS=~/crux-dashboard-backend/crux-gcloud.json
 npm run build
-npm start # pm2 reloadall
+npm start # pm2 reload all
 ```

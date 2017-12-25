@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { TYPES } from '../types';
 import { inject, injectable } from 'inversify';
+import * as escapeElastic from 'elasticsearch-sanitize';
 
 import { IController, IRequestFormat, IStorageObject } from '../interfaces';
 import { IOHalter } from '../utils/IOHalter';
@@ -82,7 +83,7 @@ export class ElasticSearchClient {
         const searchQueryObject = {
             query_string: {
                 fields: ["origin"],
-                query: `${origin}`,
+                query: `${escapeElastic(origin)}`,
             }
         };
 
