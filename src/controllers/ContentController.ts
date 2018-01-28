@@ -69,7 +69,10 @@ export class ContentController implements IController {
                     // TODO Check if valid data came, and act accordingly
                     // Adding in content cache
                     try {
+                        // Adding the content
                         await this.redisClient.addDocument(documentID, newData);
+                        // Adding the origin
+                        await this.elasticSearchClient.addOrigin(requestObject.origin);
                     } catch(e) {
                         console.log('Failed to cache', e);
                     }
