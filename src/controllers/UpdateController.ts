@@ -57,6 +57,9 @@ export class UpdateController implements IController {
     }
 
     // Takes in CSV line parses
+    // TODO: This is inefficient and does lots of stuff is in-memory... possibly have a
+    // better solution, maybe using scoring or bulk update feature in ES.
+    // There's a semaphore to handle race conditions
     private updateElasticDocuments = (fileStream) => {
         return fileStream
             .map((line:string[]) => ({ rank:line[0], domain: line[1] }))
@@ -66,10 +69,24 @@ export class UpdateController implements IController {
                 domain: rankObj.domain
             }))
             .flatMap(rankObj => {
-                return this.esClient.searchByPrimaryOrigin(rankObj.domain);
+                return this.esClient.searchByPrimaryOrigin(rankObj.domain)
+                    .then(docs => ({
+                        docs,
+                        rankToSet: rankObj.rank
+                    }));
             })
-            .flatMap(docs => {
-                return Rx.Observable.from(docs);
+            .flatMap(rankSetObj => {
+                return Rx.Observable.from(rankSetObj.docs.map(doc => ({
+                    doc, 
+                    rankToSet: rankSetObj.rankToSet
+                })));
+            })
+            .flatMap(rankDocObject => {
+                return this.esClient.setOriginRank(
+                    rankDocObject.doc._id, 
+                    rankDocObject.rankToSet,
+                    rankDocObject.doc._source
+                );
             });
     }
 

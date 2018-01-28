@@ -80,6 +80,18 @@ export class ElasticSearchClient {
         });
     }
 
+    public setOriginRank(id:string, rank:number, body: {origin: string}):Promise<any> {
+        return promisify(this.esConnection.esClient.index.bind(this.esConnection.esClient))({
+            index: this.esOriginIndex,
+            type: this.esOriginType,
+            id: id,
+            body: {
+                origin: body.origin,
+                rank
+            }
+        });
+    }
+
     public searchExactOrigin(origin:string):Promise<boolean> {
 
         const searchQueryObject = {
@@ -149,7 +161,12 @@ export class ElasticSearchClient {
         return promisify(this.esConnection.esClient.search.bind(this.esConnection.esClient))({
             index: this.esOriginIndex,
             body: {
-                query: searchQueryObject
+                query: searchQueryObject,
+                sort: [{ 
+                    rank: {
+                        order: "asc"
+                    }
+                }]
             }
         })
         .then((data => data.hits.hits.map(doc => doc._source)))
