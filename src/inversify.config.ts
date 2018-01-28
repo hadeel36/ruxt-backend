@@ -3,7 +3,7 @@ import "reflect-metadata";
 
 import { TYPES } from "./types";
 import * as appInterfaces from "./interfaces";
-import * as env from './env';
+import { env, IEnviroment } from './env';
 import { ContentController } from './controllers/ContentController';
 import { IOHalter } from './utils/IOHalter';
 import { ElasticSearchClient } from './clients/ElasticSearchClient';
@@ -21,7 +21,7 @@ const container = new Container();
 // Used to stop all HTTP I/O till all I/O blocking promises are resolved...
 container.bind<IOHalter>(TYPES.IOHalter).to(IOHalter).inSingletonScope();
 
-container.bind<any>(TYPES.Environment).toConstantValue(env);
+container.bind<IEnviroment>(TYPES.Environment).toConstantValue(env);
 container.bind<ElasticSearchConnection>(TYPES.ElasticSearchConnection).to(ElasticSearchConnection).inSingletonScope();
 container.bind<RedisConnection>(TYPES.RedisConnection).to(RedisConnection).inSingletonScope();
 container.bind<BigQueryConnection>(TYPES.BigQueryConnection).to(BigQueryConnection).inSingletonScope();
