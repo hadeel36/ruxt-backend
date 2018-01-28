@@ -2,14 +2,14 @@ import { TYPES } from '../types';
 import { inject, injectable } from 'inversify';
 import * as AWS from 'aws-sdk';
 import * as elasticsearch from 'elasticsearch';
-import { environment } from '../env';
 
 @injectable()
 export class ElasticSearchConnection {
     esClient:elasticsearch.Client;
 
-    constructor(esHost:string) {
-        console.log(environment);
+    constructor(@inject(TYPES.Environment) env:any) {
+        const { environment, esHost } = env.environment;
+
         if (environment == "production") {
             const options = {
                 hosts: [esHost],

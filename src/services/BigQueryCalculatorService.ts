@@ -10,9 +10,12 @@ import { request } from 'https';
 export class BigQueryCalculatorService {
     private bigQueryClient:BigQueryClient;
     private bigQueryTransformerService:BigQueryTransformerService;
+    private env:any;
 
     constructor(@inject(TYPES.BigQueryClient) bigQueryClient:BigQueryClient, 
-        @inject(TYPES.BigQueryTransformerService) bigQueryTransformerService: BigQueryTransformerService) {
+        @inject(TYPES.BigQueryTransformerService) bigQueryTransformerService: BigQueryTransformerService,
+        @inject(TYPES.Environment) env:any) {
+        this.env = env;
         this.bigQueryClient = bigQueryClient;
         this.bigQueryTransformerService = bigQueryTransformerService;
     }
@@ -38,14 +41,22 @@ export class BigQueryCalculatorService {
     }
 
     async getData(requestObject:IRequestFormat):Promise<any> {
+        if (this.env.environment === 'production') {
+            const [fcpProbabilities, onloadProbabilites] = await this.getResults(requestObject);
 
-        const [fcpProbabilities, onloadProbabilites] = await this.getResults(requestObject);
-
-        return {
-            bam: {
-                fcp: fcpProbabilities,
-                onload: onloadProbabilites,
-           },
-        };
+            return {
+                bam: {
+                    fcp: fcpProbabilities,
+                    onload: onloadProbabilites,
+                }
+            };
+        } else {
+            return {
+                bam: {
+                    fcp: [1,2,3,4],
+                    onload: [1.5, 2.5, 2.25]
+                }
+            };
+        }
     }
 }

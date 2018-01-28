@@ -22,9 +22,9 @@ const container = new Container();
 container.bind<IOHalter>(TYPES.IOHalter).to(IOHalter).inSingletonScope();
 
 container.bind<any>(TYPES.Environment).toConstantValue(env);
-container.bind<ElasticSearchConnection>(TYPES.ElasticSearchConnection).toConstantValue(new ElasticSearchConnection(env.EsHost));
-container.bind<RedisConnection>(TYPES.RedisConnection).toConstantValue(new RedisConnection(env.RedisHost));
-container.bind<BigQueryConnection>(TYPES.BigQueryConnection).toConstantValue(new BigQueryConnection(env.BigQueryProjectId));
+container.bind<ElasticSearchConnection>(TYPES.ElasticSearchConnection).to(ElasticSearchConnection).inSingletonScope();
+container.bind<RedisConnection>(TYPES.RedisConnection).to(RedisConnection).inSingletonScope();
+container.bind<BigQueryConnection>(TYPES.BigQueryConnection).to(BigQueryConnection).inSingletonScope();
 container.bind<ElasticSearchClient>(TYPES.ElasticSearchClient).to(ElasticSearchClient).inSingletonScope();
 container.bind<RedisClient>(TYPES.RedisClient).to(RedisClient).inSingletonScope();
 container.bind<BigQueryClient>(TYPES.BigQueryClient).to(BigQueryClient).inSingletonScope();

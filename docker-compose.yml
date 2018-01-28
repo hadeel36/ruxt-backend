@@ -8,3 +8,7 @@ services:
     environment:
     - ES_JAVA_OPTS=-Xms512m -Xmx512m
     - ELASTIC_PASSWORD=password
+  redis:
+    image: redis
+    ports:
+    - "127.0.0.1:6379:6379"

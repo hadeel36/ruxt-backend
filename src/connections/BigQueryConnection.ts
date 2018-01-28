@@ -7,7 +7,8 @@ import { inject, injectable } from 'inversify';
 export class BigQueryConnection {
     public bgClient;
 
-    constructor(private bigQueryProjectId:string) {
+    constructor(@inject (TYPES.Environment) env: any) {
+        const { bigQueryProjectId } = env;
         this.bgClient = new BigQuery();
     }
 }

@@ -45,7 +45,7 @@ export class ContentController implements IController {
     handleContentRequest:express.RequestHandler = async (req, res) => {
         const requiredProperties = ['connection', 'device', 'origin'];
         
-        // Check to see if there are no bad request...
+        // Check to see if there are no bad request... TODO... use AJV
         if (requiredProperties.reduce((acc, key) => acc + (req.body.hasOwnProperty(key) ? 1 : 0), 0) === requiredProperties.length) {
             const requestObject:IRequestFormat = {
                 connection: req.body.connection,

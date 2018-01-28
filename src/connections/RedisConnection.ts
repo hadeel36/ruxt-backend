@@ -6,7 +6,8 @@ import * as redis from 'redis';
 export class RedisConnection {
     redisClient;
 
-    constructor(redisHost:string) {
-        this.redisClient = redis.createClient(6379, redisHost);
+    constructor(@inject(TYPES.Environment) env:any) {
+        const { redisHost, redisPort } = env;
+        this.redisClient = redis.createClient(redisPort, redisHost);
     }   
 }

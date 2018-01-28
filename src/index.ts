@@ -10,7 +10,8 @@ import * as interfaces from './interfaces';
 import { container } from './inversify.config';
 import { IOHalter } from './utils/IOHalter';
 import { TYPES } from './types';
-import { NodePort, BaseUri, environment, frontendDomain } from './env';
+
+const { NodePort, BaseUri, environment, frontendDomain } = container.get<any>(TYPES.Environment);;
 
 const app = express();
 
