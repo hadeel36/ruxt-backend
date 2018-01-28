@@ -8,17 +8,19 @@ import { IOHalter } from '../utils/IOHalter';
 import { promisify } from 'util';
 import { ElasticSearchConnection } from '../connections/ElasticSearchConnection';
 
+export interface IElasticSearchHit {
+    _source: any;
+    _index: string;
+    _id: string;
+    _type: string;
+    _score: number;
+}
+
 export interface IElasticSearchResponse {
     hits: {
         total: number;
         max_score: number;
-        hits: {
-            _source: any;
-            _index: string;
-            _id: string;
-            _type: string;
-            _score: number;
-        }[]
+        hits: IElasticSearchHit[];
     }
 }
 
@@ -97,19 +99,45 @@ export class ElasticSearchClient {
         .then((arr => arr.length > 0));
     }
 
-    public searchByOrigin(origin:string):Promise<string[]> {
-
+    private cleanOrigin = (origin:string) => {
         if (origin.startsWith("https://")) {
             origin = origin.substr("https://".length)
-         } else if (origin.startsWith("http://")) {
-             origin = origin.substr("http://".length)
-         } else if (origin.startsWith("http:")) {
-             origin = origin.substr("http:".length)
-         } else if (origin.startsWith("https:")) {
-             origin = origin.substr("https:".length)
-         }
-         origin = origin.replace(/\//g, '');
-         origin = origin.replace(/:/g, '');
+        } else if (origin.startsWith("http://")) {
+            origin = origin.substr("http://".length)
+        } else if (origin.startsWith("http:")) {
+            origin = origin.substr("http:".length)
+        } else if (origin.startsWith("https:")) {
+            origin = origin.substr("https:".length)
+        }
+        origin = origin.replace(/\//g, '');
+        origin = origin.replace(/:/g, '');
+
+        return origin;
+    }
+
+    public searchByPrimaryOrigin(origin:string):Promise<IElasticSearchHit[]> {
+        origin = this.cleanOrigin(origin);
+
+        const searchQueryObject = {
+            query_string: {
+                fields: ["origin"],
+                query: `(http://${origin}*) 
+                OR (https://${origin}*) 
+                OR (http://www\.${origin}*) 
+                OR (https://www\.${origin}*)`,
+            }
+        };
+
+        return promisify(this.esConnection.esClient.search.bind(this.esConnection.esClient))({
+            index: this.esOriginIndex,
+            body: {
+                query: searchQueryObject
+            }
+        }).then(data => data.hits.hits);
+    }
+
+    public searchByOrigin(origin:string):Promise<string[]> {
+        origin = this.cleanOrigin(origin);
 
         const searchQueryObject = {
             query_string: {

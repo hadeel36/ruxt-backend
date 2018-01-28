@@ -15,15 +15,19 @@ export class UpdateController implements IController {
 
     private esClient: ElasticSearchClient;
     private env: IEnviroment;
+    private processing: boolean; // A simple semaphore to reflect whether the system is processing the CSV data internally, since it's a single process
 
     constructor(@inject(TYPES.ElasticSearchClient) esClient:ElasticSearchClient,
         @inject(TYPES.Environment) env:IEnviroment) {
         this.esClient = esClient;
         this.env = env;
-
+        this.processing = false;
         this.application = express();
+
         this.application.use(this.authMiddleware);
-        this.application.use('/rankings', this.updateRankings);
+        this.application.use(this.processingSemaphoreMiddleware);
+        this.application.post('/rankings', this.updateRankings); 
+        this.application.get('/rankings/status', this.getUpdateStatus);
     }
 
     authMiddleware:express.RequestHandler = (req, res, next) => {
@@ -36,22 +40,57 @@ export class UpdateController implements IController {
         }
     }
 
+    processingSemaphoreMiddleware:express.RequestHandler = (req, res, next) => {
+        if (this.processing) {
+            res.status(403).send({
+                processing: true
+            });
+        } else {
+            next();
+        }
+    }
+
+    getUpdateStatus:express.RequestHandler = (req, res) => {
+        res.send({
+            processing: this.processing
+        });
+    }
+
+    // Takes in CSV line parses
+    private updateElasticDocuments = (fileStream) => {
+        return fileStream
+            .map((line:string[]) => ({ rank:line[0], domain: line[1] }))
+            .filter(rankObj => !isNaN(parseInt(rankObj.rank))) // Removing bad ranks...
+            .map(rankObj => ({
+                rank: parseInt(rankObj.rank),
+                domain: rankObj.domain
+            }))
+            .flatMap(rankObj => {
+                return this.esClient.searchByPrimaryOrigin(rankObj.domain);
+            })
+            .flatMap(docs => {
+                return Rx.Observable.from(docs);
+            });
+    }
+
     // CSV format
     // <rank>,<domain>
     // <rank>,<domain>
     updateRankings:express.RequestHandler = (req, res) => {
+        this.processing = true;
+
         const rawFileStream = RxNode.fromStream(req.pipe(csv()));
-        rawFileStream.map((line:string) => {
-            return { rank:line[0], domain: line[1] }
-        })
-        .filter(rankObj => !isNaN(parseInt(rankObj.rank))) // Removing bad ranks...
-        .map(rankObj => ({
-            rank: parseInt(rankObj.rank),
-            domain: rankObj.domain
-        }))
-        .subscribe((d) => {
-            console.log(d);
+
+        rawFileStream.subscribe(() => {}, () => {}, () => {
+            res.send({
+                uploadingComplete: true
+            });
         });
-        res.send('OK');
+
+        this.updateElasticDocuments(rawFileStream).subscribe((d) => {
+            console.log(d);
+        }, () => {}, () => {
+            this.processing = false;
+        });
     }
 }
