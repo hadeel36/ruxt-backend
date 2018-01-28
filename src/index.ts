@@ -4,7 +4,7 @@ import * as logger from 'logops';
 import * as process from 'process';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
-import * as cacheControl from 'express-cache-controller';
+const cacheControl = require('express-cache-controller');
 
 import * as interfaces from './interfaces';
 import { container } from './inversify.config';
@@ -42,12 +42,15 @@ const initApplication = () => {
     });
 };
 
-const mainController = container.get<interfaces.IController>(TYPES.ContentController);
+const contentController = container.get<interfaces.IController>(TYPES.ContentController);
+const updateController = container.get<interfaces.IController>(TYPES.UpdateController);
 
 if (BaseUri) {
-    app.use(BaseUri, mainController.application);
+    app.use(BaseUri, contentController.application);
+    app.use(BaseUri, updateController.application);
 } else {
-    app.use(mainController.application);
+    app.use(contentController.application);
+    app.use(updateController.application);
 }
 
 // Just a status endpoint

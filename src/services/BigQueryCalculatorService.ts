@@ -29,7 +29,7 @@ export class BigQueryCalculatorService {
         if (!data) {
             return [null, null];
         }
-        // This might be a bad idea... TODO -> THINK
+        // This might be a bad idea... TODO
         const fcpProbabilities = {};
         const onloadProbabilites = {};
         for (let i = 1; i <=10; i++) {

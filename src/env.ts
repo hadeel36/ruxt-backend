@@ -11,7 +11,7 @@ export interface IEnviroment {
     frontendDomain: string;
 }
 
-export const env:IEnviroment {
+export const env:IEnviroment = {
     NodePort: isNaN(parseInt(process.env.PORT)) ? 5000 : parseInt(process.env.PORT),
     Auth: process.env.AUTH || 'no-auth',
     EsHost: process.env.ESHOST || 'localhost:9200',

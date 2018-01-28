@@ -21,7 +21,8 @@ export class ContentController implements IController {
     constructor(@inject(TYPES.BigQueryCalculatorService) bigQueryCalculatorService:BigQueryCalculatorService,
                 @inject(TYPES.ElasticSearchClient) elasticSearchClient:ElasticSearchClient,
                 @inject(TYPES.Environment) env:any,
-                @inject(TYPES.Utils) utils:Utils, @inject(TYPES.RedisClient) redisClient:RedisClient) {
+                @inject(TYPES.Utils) utils:Utils,
+                @inject(TYPES.RedisClient) redisClient:RedisClient) {
         this.bigQueryCalculatorService = bigQueryCalculatorService;
         this.elasticSearchClient = elasticSearchClient;
         this.redisClient = redisClient;

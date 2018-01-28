@@ -5,6 +5,7 @@ import { TYPES } from "./types";
 import * as appInterfaces from "./interfaces";
 import { env, IEnviroment } from './env';
 import { ContentController } from './controllers/ContentController';
+import { UpdateController } from './controllers/UpdateController';
 import { IOHalter } from './utils/IOHalter';
 import { ElasticSearchClient } from './clients/ElasticSearchClient';
 import { RedisClient } from './clients/RedisClient';
@@ -31,6 +32,7 @@ container.bind<BigQueryClient>(TYPES.BigQueryClient).to(BigQueryClient).inSingle
 container.bind<BigQueryTransformerService>(TYPES.BigQueryTransformerService).to(BigQueryTransformerService).inSingletonScope();
 container.bind<BigQueryCalculatorService>(TYPES.BigQueryCalculatorService).to(BigQueryCalculatorService).inSingletonScope();
 container.bind<appInterfaces.IController>(TYPES.ContentController).to(ContentController).inSingletonScope();
+container.bind<appInterfaces.IController>(TYPES.UpdateController).to(UpdateController).inSingletonScope();
 container.bind<Utils>(TYPES.Utils).to(Utils);
 
 export { container };
