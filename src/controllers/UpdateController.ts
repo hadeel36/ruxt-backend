@@ -1,5 +1,8 @@
 import { inject, injectable } from 'inversify';
 import * as express from 'express';
+import * as Rx from 'rxjs/Rx';
+import * as RxNode from 'rx-node';
+import * as csv from 'csv-parse';
 
 import { IController } from '../interfaces';
 import { TYPES } from '../types';
@@ -24,7 +27,7 @@ export class UpdateController implements IController {
     }
 
     authMiddleware:express.RequestHandler = (req, res, next) => {
-        if (req.header('Authorisation') === this.env.Auth) {
+        if (req.header('Authorization') === this.env.Auth) {
             next();
         } else {
             res.status(401).send({
@@ -33,7 +36,22 @@ export class UpdateController implements IController {
         }
     }
 
+    // CSV format
+    // <rank>,<domain>
+    // <rank>,<domain>
     updateRankings:express.RequestHandler = (req, res) => {
+        const rawFileStream = RxNode.fromStream(req.pipe(csv()));
+        rawFileStream.map((line:string) => {
+            return { rank:line[0], domain: line[1] }
+        })
+        .filter(rankObj => !isNaN(parseInt(rankObj.rank))) // Removing bad ranks...
+        .map(rankObj => ({
+            rank: parseInt(rankObj.rank),
+            domain: rankObj.domain
+        }))
+        .subscribe((d) => {
+            console.log(d);
+        });
         res.send('OK');
     }
 }
