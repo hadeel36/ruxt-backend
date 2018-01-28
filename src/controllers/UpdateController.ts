@@ -104,9 +104,7 @@ export class UpdateController implements IController {
             });
         });
 
-        this.updateElasticDocuments(rawFileStream).subscribe((d) => {
-            console.log(d);
-        }, () => {}, () => {
+        this.updateElasticDocuments(rawFileStream).subscribe((d) => {}, () => {}, () => {
             this.processing = false;
         });
     }
