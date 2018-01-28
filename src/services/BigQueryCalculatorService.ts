@@ -29,6 +29,7 @@ export class BigQueryCalculatorService {
         if (!data) {
             return [null, null];
         }
+        // This might be a bad idea... TODO -> THINK
         const fcpProbabilities = {};
         const onloadProbabilites = {};
         for (let i = 1; i <=10; i++) {
@@ -51,7 +52,7 @@ export class BigQueryCalculatorService {
                 }
             };
         } else {
-            return {
+            return { // Dummy data
                 bam: {
                     fcp: [1,2,3,4],
                     onload: [1.5, 2.5, 2.25]

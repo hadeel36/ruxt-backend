@@ -4,7 +4,7 @@ import * as logger from 'logops';
 import * as process from 'process';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
-const cacheControl = require('express-cache-controller');
+import * as cacheControl from 'express-cache-controller';
 
 import * as interfaces from './interfaces';
 import { container } from './inversify.config';
