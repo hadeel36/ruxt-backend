@@ -1,11 +1,18 @@
+"use strict";
+
 const AWS =  require('aws-sdk');
+const BigQuery = require("@google-cloud/bigquery");
+const BigQueryProjectId = require("./env.ts");
+const googleApplicationCredentials = require("./env.ts");
+const accessKeyId = require("./env.ts");
+const secretAccessKey = require("./env.ts");
 
 const options = {
   hosts: ["https://search-crux-staging-4xqx45vugm4qywnwcq7draso2m.us-east-1.es.amazonaws.com"],
   connectionClass: require("http-aws-es"),
   awsConfig: new AWS.Config({
-    accessKeyId: "AKIAIPO2UAKQ2N22NRWQ",
-    secretAccessKey: "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",
+    accessKeyId: accessKeyId,
+    secretAccessKey: secretAccessKey,
     region: "us-east-1"
   }),
   httpOptions: {}
@@ -15,14 +22,20 @@ const client = require("elasticsearch").Client(options);
 
 const items = [];
 
-const BigQuery = require("@google-cloud/bigquery");
+if(env.BigQueryProjectId) {
+  const projectId = env.BigQueryProjectId;
+}  else {
+  console.log("Please set project id");
+}
 
-const projectId = ""; // Add project id
-
-const bigQuery =  new BigQuery({
-  projectId: projectId,
-  credentials: require("") // Add path to json file credentials
-});
+if(env.googleApplicationCredentials) {
+  const bigQuery =  new BigQuery({
+    projectId: projectId,
+    credentials: require(env.googleApplicationCredentials),
+  });
+} else {
+  console.log("please add credentials json file path");
+}
 
 const dataSetName = "chrome-ux-report.all.201711";
 
