@@ -1,5 +1,6 @@
 const TYPES = {
     ContentController: 'ContentController',
+    UpdateController: 'UpdateController',
     IOHalter: 'IOHalter',
     ElasticSearchClient: 'ElasticSearchClient',
     ElasticSearchConnection: 'ElasticSearchConnection',

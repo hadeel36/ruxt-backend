@@ -10,7 +10,8 @@ import * as interfaces from './interfaces';
 import { container } from './inversify.config';
 import { IOHalter } from './utils/IOHalter';
 import { TYPES } from './types';
-import { NodePort, BaseUri, environment, frontendDomain } from './env';
+
+const { NodePort, BaseUri, environment, frontendDomain } = container.get<any>(TYPES.Environment);;
 
 const app = express();
 
@@ -41,12 +42,15 @@ const initApplication = () => {
     });
 };
 
-const mainController = container.get<interfaces.IController>(TYPES.ContentController);
+const contentController = container.get<interfaces.IController>(TYPES.ContentController);
+const updateController = container.get<interfaces.IController>(TYPES.UpdateController);
 
 if (BaseUri) {
-    app.use(BaseUri, mainController.application);
+    app.use(BaseUri, contentController.application);
+    app.use(BaseUri, updateController.application);
 } else {
-    app.use(mainController.application);
+    app.use(contentController.application);
+    app.use(updateController.application);
 }
 
 // Just a status endpoint

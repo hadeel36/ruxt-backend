@@ -21,7 +21,8 @@ export class ContentController implements IController {
     constructor(@inject(TYPES.BigQueryCalculatorService) bigQueryCalculatorService:BigQueryCalculatorService,
                 @inject(TYPES.ElasticSearchClient) elasticSearchClient:ElasticSearchClient,
                 @inject(TYPES.Environment) env:any,
-                @inject(TYPES.Utils) utils:Utils, @inject(TYPES.RedisClient) redisClient:RedisClient) {
+                @inject(TYPES.Utils) utils:Utils,
+                @inject(TYPES.RedisClient) redisClient:RedisClient) {
         this.bigQueryCalculatorService = bigQueryCalculatorService;
         this.elasticSearchClient = elasticSearchClient;
         this.redisClient = redisClient;
@@ -45,7 +46,7 @@ export class ContentController implements IController {
     handleContentRequest:express.RequestHandler = async (req, res) => {
         const requiredProperties = ['connection', 'device', 'origin'];
         
-        // Check to see if there are no bad request...
+        // Check to see if there are no bad request... TODO... use AJV
         if (requiredProperties.reduce((acc, key) => acc + (req.body.hasOwnProperty(key) ? 1 : 0), 0) === requiredProperties.length) {
             const requestObject:IRequestFormat = {
                 connection: req.body.connection,
@@ -69,7 +70,10 @@ export class ContentController implements IController {
                     // TODO Check if valid data came, and act accordingly
                     // Adding in content cache
                     try {
+                        // Adding the content
                         await this.redisClient.addDocument(documentID, newData);
+                        // Adding the origin
+                        await this.elasticSearchClient.addOrigin(requestObject.origin);
                     } catch(e) {
                         console.log('Failed to cache', e);
                     }
