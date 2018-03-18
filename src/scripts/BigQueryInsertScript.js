@@ -2,10 +2,10 @@
 
 const AWS =  require('aws-sdk');
 const BigQuery = require("@google-cloud/bigquery");
-const BigQueryProjectId = require("./env.ts");
-const googleApplicationCredentials = require("./env.ts");
-const accessKeyId = require("./env.ts");
-const secretAccessKey = require("./env.ts");
+const BigQueryProjectId = require("./env.js");
+const googleApplicationCredentials = require("./env.js");
+const accessKeyId = require("./env.js");
+const secretAccessKey = require("./env.js");
 
 const options = {
   hosts: ["https://search-crux-staging-4xqx45vugm4qywnwcq7draso2m.us-east-1.es.amazonaws.com"],
