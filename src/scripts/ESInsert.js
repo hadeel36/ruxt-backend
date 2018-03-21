@@ -10,6 +10,7 @@ const { googleApplicationCredentials, dataSetName, ESHost } = env;
 const options = {
   hosts: [ESHost],
   connectionClass: require("http-aws-es"),
+  awsConfig: new AWS.Config({ region: 'us-east-1' })
   httpOptions: {}
 };
 
@@ -53,7 +54,7 @@ function printResult(rows) {
 }
 
 function insertIntoES(rows) {
-  for(let i=0; i<rows.length;  i=i+50) {
+  for(let i=0; i<100;  i=i+50) {
     console.log(`inserting from ${i} to ${i + 50}`);
     client.bulk({
       body: items.slice(i, i+50)
@@ -70,7 +71,7 @@ function insertIntoES(rows) {
 bigQuery.query(queryOption).then(results => {
   const rows = results[0];
   printResult(rows);
-  // insertIntoES(rows);
+  insertIntoES(rows);
 }).catch(err => {
   console.log(err);
 });
