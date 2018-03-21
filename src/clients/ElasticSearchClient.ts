@@ -162,11 +162,11 @@ export class ElasticSearchClient {
             index: this.esOriginIndex,
             body: {
                 query: searchQueryObject,
-                sort: [{ 
-                    rank: {
-                        order: "asc"
-                    }
-                }]
+                // sort: [{ 
+                //     rank: {
+                //         order: "asc"
+                //     }
+                // }]
             }
         })
         .then((data => data.hits.hits.map(doc => doc._source)))
