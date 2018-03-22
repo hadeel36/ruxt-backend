@@ -53,25 +53,38 @@ function printResult(rows) {
   });
 }
 
-function insertIntoES(rows) {
-  for(let i=0; i<100;  i=i+50) {
-    console.log(`inserting from ${i} to ${i + 50}`);
+async function insertIntoESPromise(items) {
+  return new Promise((resolve, reject) => {
     client.bulk({
-      body: items.slice(i, i+50)
-    }, function(err, res) {
-      if(err) {
+      body: items
+    }, (err, res) => {
+      if (err) {
         console.log(err);
+        reject(err);
       } else {
         console.log(res);
+        resolve(res);
       }
-    });
+    })
+  });
+}
+
+async function insertIntoES(rows) {
+  const batchSize = 1000;
+  for(let i=0; i<=rows.length;  i=i+batchSize) {
+    console.log(`inserting from ${i} to ${i + batchSize}`);
+    try {
+      await insertIntoESPromise(items.slice(i, i+ batchSize));
+    } catch(err) {
+      console.log(err);
+    }
   }
 }
 
-bigQuery.query(queryOption).then(results => {
+bigQuery.query(queryOption).then(async (results) => {
   const rows = results[0];
   printResult(rows);
-  insertIntoES(rows);
+  await insertIntoES(rows);
 }).catch(err => {
   console.log(err);
 });
