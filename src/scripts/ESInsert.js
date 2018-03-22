@@ -2,22 +2,15 @@
 
 const AWS =  require('aws-sdk');
 const BigQuery = require("@google-cloud/bigquery");
-<<<<<<< HEAD:src/scripts/BigQueryInsertScript.js
-const BigQueryProjectId = require("./env.js");
-const googleApplicationCredentials = require("./env.js");
-const accessKeyId = require("./env.js");
-const secretAccessKey = require("./env.js");
-=======
 const env = require("./env.js");
 
 const projectId = env.BigQueryProjectId;
 const { googleApplicationCredentials, dataSetName, ESHost } = env;
->>>>>>> 217968d1d95bf5df10047fa6275afd9f8ed084b1:src/scripts/ESInsert.js
 
 const options = {
   hosts: [ESHost],
   connectionClass: require("http-aws-es"),
-  awsConfig: new AWS.Config({ region: 'us-east-1' })
+  awsConfig: new AWS.Config({ region: 'us-east-1' }),
   httpOptions: {}
 };
 
