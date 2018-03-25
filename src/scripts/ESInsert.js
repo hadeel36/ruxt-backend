@@ -16,8 +16,6 @@ const options = {
 
 const client = require("elasticsearch").Client(options);
 
-const items = [];
-
 if(!projectId) {
   console.log("Please set project id");
   process.exit();
@@ -45,18 +43,21 @@ const queryOption = {
   useLegacySql: false,
 };
 
-function printResult(rows) {
+function prepareResult(rows) {
+  const items = [];
   console.log(`received ${rows.length} rows`);
   rows.forEach(row => {
     let origin = row["origin"];
     items.push({index: {_index: "origin-index", _type: "all", _id: origin}}, {origin});
   });
+  return items;
 }
 
 async function insertIntoESPromise(items) {
   return new Promise((resolve, reject) => {
     client.bulk({
-      body: items
+      body: items,
+      timeout: "15m"
     }, (err, res) => {
       if (err) {
         console.log(err);
@@ -69,22 +70,36 @@ async function insertIntoESPromise(items) {
   });
 }
 
+
 async function insertIntoES(rows) {
-  const batchSize = 1000;
-  for(let i=0; i<=rows.length;  i=i+batchSize) {
+  const batchSize = 10000;
+        console.log(rows.length);
+  for(let i=2940000; i<=rows.length;  i=i+batchSize) {
     console.log(`inserting from ${i} to ${i + batchSize}`);
-    try {
-      await insertIntoESPromise(items.slice(i, i+ batchSize));
-    } catch(err) {
-      console.log(err);
-    }
+    await insertIntoESPromise(rows.slice(i, i+ batchSize));
   }
 }
 
-bigQuery.query(queryOption).then(async (results) => {
-  const rows = results[0];
-  printResult(rows);
-  await insertIntoES(rows);
-}).catch(err => {
-  console.log(err);
-});
+function writeOrigins(rows) {
+  const fs = require('fs');
+  fs.writeFileSync('origins.txt', JSON.stringify(rows));
+}
+
+
+// bigQuery.query(queryOption).then(async (results) => {
+//   const rows = results[0];
+//   // writeOrigins(rows);
+//   //await insertIntoES(prepareResult(rows));
+// }).catch(err => {
+//   console.log(err);
+// });
+
+
+async function run() {
+  const fs = require('fs');
+  const rows = JSON.parse(fs.readFileSync('origins.txt'));
+  console.log(rows.length);
+  await insertIntoES(prepareResult(rows));
+}
+
+run();
