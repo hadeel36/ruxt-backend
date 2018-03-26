@@ -24,20 +24,9 @@ export class UpdateController implements IController {
         this.processing = false;
         this.application = express();
 
-        this.application.use(this.authMiddleware);
         this.application.use(this.processingSemaphoreMiddleware);
         this.application.post('/rankings', this.updateRankings); 
         this.application.get('/rankings/status', this.getUpdateStatus);
-    }
-
-    authMiddleware:express.RequestHandler = (req, res, next) => {
-        if (req.header('Authorization') === this.env.Auth) {
-            next();
-        } else {
-            res.status(401).send({
-                message: 'Not authorized to make the request'
-            });
-        }
     }
 
     processingSemaphoreMiddleware:express.RequestHandler = (req, res, next) => {
