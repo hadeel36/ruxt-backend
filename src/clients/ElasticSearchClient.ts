@@ -36,7 +36,7 @@ export class ElasticSearchClient {
     constructor(@inject(TYPES.ElasticSearchConnection) esConnection:ElasticSearchConnection, @inject(TYPES.IOHalter) ioHalter:IOHalter) {
         this.esConnection = esConnection;
 
-        const ioPromise = promisify(this.esConnection.esClient.ping.bind(this.esConnection.esClient))({requestTimeout: 1000});
+        const ioPromise = promisify(this.esConnection.esClient.ping.bind(this.esConnection.esClient))({requestTimeout: 10000});
 
         ioHalter.addPromise(ioPromise);
         ioHalter.addPromise(this.createContentIndex());
