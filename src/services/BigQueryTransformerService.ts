@@ -1,13 +1,18 @@
 import { TYPES } from '../types';
 import { inject, injectable } from 'inversify';
 import { IRequestFormat } from '../interfaces';
+import { IEnviroment } from '../env';
 
 @injectable()
 export class BigQueryTransformerService {
-    public datasetName = 'chrome-ux-report.all.201711';
+    datasetName;
+
+    constructor(@inject(TYPES.Environment) env:IEnviroment) {
+      const { BigQueryDataset } = env;
+      this.datasetName = BigQueryDataset;
+    }
 
     public generateSql(requestObject:IRequestFormat) {
-
     	let query = `SELECT origin,
 			ROUND(SUM(IF(fcp.END <= 1000,
 				fcp.density,
