@@ -22,6 +22,7 @@
     "aws-sdk": "^2.170.0",
     "body-parser": "^1.18.1",
     "cors": "^2.8.4",
+    "countrynames": "^0.1.1",
     "csv-parse": "^2.0.0",
     "elasticsearch": "^14.0.0",
     "elasticsearch-sanitize": "^2.0.0",
