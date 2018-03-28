@@ -52,7 +52,7 @@ export class ContentController implements IController {
                 connection: req.body.connection,
                 device: req.body.device,
                 origin: req.body.origin,
-                country: req.body.country,
+                country: req.body.country
             };
             
             const documentID = Object.keys(requestObject).reduce((acc, key) => acc + requestObject[key], '');
