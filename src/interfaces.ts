@@ -13,6 +13,7 @@ export interface IRequestFormat {
     device: string;
     origin: string;
     connection: string;
+    country: string;
 }
 
 export interface IStorageObject extends IRequestFormat {

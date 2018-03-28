@@ -9,7 +9,9 @@ var client = redis.createClient({
 client.flushdb( function (err, res) {
   if(res) {
     console.log(res);
+    process.exit();
   } else {
     console.log(err);
+    process.exit();
   }
 });
