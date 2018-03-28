@@ -14,12 +14,14 @@ export class BigQueryTransformerService {
     }
 
     public generateSql(requestObject:IRequestFormat) {
-		const countryName = requestObject.country;
+		const countryName: string = requestObject.country;
+		let datasetToQuery: string = '';
 		if(countryName === 'all') {
 			let countryAlpha2Name = countryName.toUpperCase();
+			datasetToQuery = this.datasetName;
 		} else {
 			let countryAlpha2Name = countrynames.getCode(countryName);
-			this.datasetName = this.datasetName.replace('all', `country_${countryAlpha2Name.toLowerCase()}`);
+			datasetToQuery = this.datasetName.replace('all', `country_${countryAlpha2Name.toLowerCase()}`);
 		}
 		
 		let query = `SELECT
@@ -86,7 +88,7 @@ export class BigQueryTransformerService {
 				onload.density,
 				0)) / SUM(onload.density), 3) AS t10onload
 		FROM
-			\`${this.datasetName}\`,
+			\`${datasetToQuery}\`,
 			UNNEST(first_contentful_paint.histogram.bin) AS fcp,
 			UNNEST(onload.histogram.bin) AS onload
 		WHERE
