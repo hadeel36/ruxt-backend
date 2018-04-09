@@ -6,3 +6,4 @@ stuff/
 setEnv.sh
 crux-gcloud.json
 .DS_Store
+src/scripts/origins.txt
